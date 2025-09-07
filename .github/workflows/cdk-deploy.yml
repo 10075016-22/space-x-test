@@ -34,7 +34,6 @@ jobs:
 
       - name: Install Python deps
         run: |
-          cd infra/cdk
           python -m venv .venv
           source .venv/bin/activate
           pip install -r requirements.txt
@@ -47,13 +46,11 @@ jobs:
 
       - name: CDK Bootstrap (idempotent)
         run: |
-          cd infra/cdk
           source .venv/bin/activate
           cdk bootstrap --ci || true
 
       - name: CDK Deploy
         run: |
-          cd infra/cdk
           source .venv/bin/activate
           cdk deploy --require-approval never
 
