@@ -33,6 +33,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python deps
+        working-directory: infra/cdk
         run: |
           python -m venv .venv
           source .venv/bin/activate
@@ -45,11 +46,13 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: CDK Bootstrap (idempotent)
+        working-directory: infra/cdk
         run: |
           source .venv/bin/activate
           cdk bootstrap --ci || true
 
       - name: CDK Deploy
+        working-directory: infra/cdk
         run: |
           source .venv/bin/activate
           cdk deploy --require-approval never
