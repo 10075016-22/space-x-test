@@ -4,7 +4,7 @@
     {
       "Effect": "Allow",
       "Principal": {
-        "Federated": "arn:aws:iam::<ACCOUNT_ID>:oidc-provider/token.actions.githubusercontent.com"
+        "Federated": "arn:aws:iam::456276248619:oidc-provider/token.actions.githubusercontent.com"
       },
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
@@ -13,13 +13,11 @@
         },
         "StringLike": {
           "token.actions.githubusercontent.com:sub": [
-            "repo:ORG/REPO:ref:refs/heads/main",
-            "repo:ORG/REPO:pull_request"
+            "repo:10075016-22/space-x-test:ref:refs/heads/main",
+            "repo:10075016-22/space-x-test:pull_request"
           ]
         }
       }
     }
   ]
 }
-
-
