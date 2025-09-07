@@ -25,7 +25,7 @@ provider:
             - arn:aws:dynamodb:*:*:table/${env:TABLE_NAME, 'AppDataTable'}/index/*
 
 plugins:
-  - serverless-offline
+  - ${self:custom.plugins.${opt:stage, 'dev'}, ''}
 
 functions:
   hello:

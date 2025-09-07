@@ -26,8 +26,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Serverless
-        run: npm i -g serverless@3
+      - name: Install Serverless + Plugins
+        run: |
+          npm i -g serverless@3
+          npm install --save-dev serverless-offline
 
       - name: Install Python deps
         working-directory: services/backend
