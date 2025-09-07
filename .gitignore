@@ -1,0 +1,8 @@
+# Root
+node_modules
+.venv
+__pycache__
+*.pyc
+cdk.out
+.env
+.DS_Store

@@ -1,0 +1,57 @@
+service: backend
+
+frameworkVersion: '3'
+useDotenv: true
+
+
+provider:
+  name: aws
+  runtime: python3.11
+  lambdaHashingVersion: '20201221'
+  environment:
+    TABLE_NAME: ${env:TABLE_NAME, 'AppDataTable'}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:BatchWriteItem
+            - dynamodb:DeleteItem
+            - dynamodb:DescribeTable
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+          Resource:
+            - arn:aws:dynamodb:*:*:table/${env:TABLE_NAME, 'AppDataTable'}
+            - arn:aws:dynamodb:*:*:table/${env:TABLE_NAME, 'AppDataTable'}/index/*
+
+plugins:
+  - serverless-offline
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - httpApi:
+          path: /
+          method: GET
+  sync:
+    handler: handler.sync
+    timeout: 30
+    events:
+      - httpApi:
+          path: /sync
+          method: POST
+  launches:
+    handler: handler.launches
+    timeout: 30
+    events:
+      - httpApi:
+          path: /launches
+          method: GET
+  statistics:
+    handler: handler.statistics
+    timeout: 30
+    events:
+      - httpApi:
+          path: /statistics
+          method: GET

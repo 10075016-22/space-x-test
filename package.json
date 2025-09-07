@@ -1,0 +1,21 @@
+{
+  "name": "space-x-project",
+  "private": true,
+  "workspaces": [
+    "services/*",
+    "infra/*"
+  ],
+  "scripts": {
+    "deploy:backend": "cd services/backend && npx serverless@3 deploy",
+    "remove:backend": "cd services/backend && npx serverless@3 remove",
+    "offline": "cd services/backend && source .venv/bin/activate && npx serverless@3 offline",
+    "cdk:bootstrap": "cd infra/cdk && source .venv/bin/activate && cdk bootstrap",
+    "cdk:deploy": "cd infra/cdk && source .venv/bin/activate && cdk deploy",
+    "cdk:destroy": "cd infra/cdk && source .venv/bin/activate && cdk destroy",
+    "cdk:diff": "cd infra/cdk && source .venv/bin/activate && cdk diff",
+    "cdk:synth": "cd infra/cdk && source .venv/bin/activate && cdk synth"
+  },
+  "devDependencies": {
+    "serverless-offline": "^14.4.0"
+  }
+}
