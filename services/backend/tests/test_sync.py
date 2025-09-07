@@ -72,8 +72,20 @@ def test_sync_happy_path(mock_urlopen, mock_boto3):
     assert batch.put_item.call_count == 2
 
 
+@patch("boto3.resource")
 @patch("urllib.request.urlopen", side_effect=Exception("boom"))
-def test_sync_spacex_error(mock_urlopen):
+def test_sync_spacex_error(mock_urlopen, mock_boto3):
+    table_mock = MagicMock()
+    batch = MagicMock()
+    batch_manager = MagicMock()
+    batch_manager.__enter__.return_value = batch
+    batch_manager.__exit__.return_value = False
+    table_mock.batch_writer.return_value = batch_manager
+
+    dynamo_mock = MagicMock()
+    dynamo_mock.Table.return_value = table_mock
+    mock_boto3.return_value = dynamo_mock
+
     resp = handler.sync({}, {})
     assert resp["statusCode"] == 500
     body = json.loads(resp["body"])
