@@ -74,7 +74,7 @@ paths:
                   error:
                     type: string
   /statistics:
-    get:
+    get:  
       summary: Obtener estadísticas de lanzamientos
       description: Devuelve estadísticas agregadas de los lanzamientos almacenados
       responses:
@@ -102,6 +102,87 @@ paths:
                         description: Total de lanzamientos próximos
         '500':
           description: Error al obtener las estadísticas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /success-rate:
+    get:
+      summary: Obtener tasa de éxito de lanzamientos
+      description: Devuelve la tasa de éxito de los lanzamientos almacenados
+      responses:
+        '200':
+          description: Tasa de éxito de lanzamientos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  labels:
+                    type: array
+                    description: Etiquetas de las estadísticas
+                  statistics:
+                    type: array
+                    description: Estadísticas de las etiquetas
+                  error:
+                    type: string
+                    description: Error al obtener la tasa de éxito de lanzamientos
+        '500':
+          description: Error al obtener la tasa de éxito de lanzamientos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string  
+  /launches-by-year:
+    get:
+      summary: Obtener lanzamientos por año
+      description: Devuelve los lanzamientos por año almacenados
+      responses:
+        '200':
+          description: Lanzamientos por año obtenidos exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  labels:
+                    type: array
+                    description: Etiquetas de los años
+                  statistics:
+                    type: array
+                    description: Estadísticas de los años
+                  error:
+                    type: string
+                    description: Error al obtener los lanzamientos por año
+  /rocket-usage:
+    get:
+      summary: Obtener cantidad de lanzamientos por tipo de cohete
+      description: Devuelve la cantidad de lanzamientos por tipo de cohete almacenados
+      responses:
+        '200':
+          description: Cantidad de lanzamientos por tipo de cohete obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  labels:
+                    type: array
+                    description: Etiquetas de los tipos de cohete
+                  statistics:
+                    type: array
+                    description: Estadísticas de los tipos de cohete
+                  error:
+                    type: string
+                    description: Error al obtener la cantidad de lanzamientos por tipo de cohete
+        '500':
+          description: Error al obtener la cantidad de lanzamientos por tipo de cohete
           content:
             application/json:
               schema:

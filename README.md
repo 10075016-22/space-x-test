@@ -60,3 +60,16 @@ npm run remove:backend
 Preview deploy en AWS
 
 ![Image deploy](./docs/images/cloudformation.png)
+
+## Endpoints
+
+| Método | Endpoint                              | 
+|--------|---------------------------------------|
+|`GET`  | http://localhost:3000/                                        
+|`POST` | http://localhost:3000/sync
+|`GET`  | http://localhost:3000/launches
+|`GET`  | http://localhost:3000/statistics
+|`GET`  | http://localhost:3000/success-rate
+|`GET`  | http://localhost:3000/launches-by-year
+|`GET`  | http://localhost:3000/rocket-usage                                         
+|`GET`  | http://localhost:3000/docs

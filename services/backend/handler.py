@@ -25,21 +25,12 @@ def convert_decimals(obj):
 def hello(event, context):
     body = {
         "message": "Go Serverless v2.0! Your function executed successfully!",
-        "input": event,
+        "subtitle": "Why so serious?"
     }
 
     response = {"statusCode": 200, "body": json.dumps(body)}
 
     return response
-
-    # Use this code if you don't use the http event with the LAMBDA-PROXY
-    # integration
-    """
-    return {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "event": event
-    }
-    """
 
 
 def sync(event, context):
@@ -194,10 +185,11 @@ def statistics(event, context):
 
         # Get the statistics of the launches
         statistics = {
-            "total_launches": len(items),
-            "total_success": sum(1 for item in items if item["status"] == "success"),
-            "total_failed": sum(1 for item in items if item["status"] == "failed"),
-            "total_upcoming": sum(1 for item in items if item["status"] == "upcoming"),
+            "total": len(items),
+            "success": sum(1 for item in items if item["status"] == "success"),
+            "failed": sum(1 for item in items if item["status"] == "failed"),
+            "upcoming": sum(1 for item in items if item["status"] == "upcoming"),
+            "success_rate": sum(1 for item in items if item["status"] == "success") / len(items) * 100,
         }
 
         # Convert Decimal objects to native Python types for JSON serialization
@@ -205,7 +197,7 @@ def statistics(event, context):
         
         return {
             "statusCode": 200,
-            "body": json.dumps({"statistics": converted_statistics}),
+            "body": json.dumps(converted_statistics),
         }
     except Exception as e:
         return {
@@ -213,6 +205,126 @@ def statistics(event, context):
             "body": json.dumps({"error": f"Error getting statistics: {str(e)}"}),
         }
 
+def success_rate(event, context):
+    """
+    Get the overall success rate of the launches from the DynamoDB database.
+    """
+    table_name = os.environ.get("TABLE_NAME", "AppDataTable")
+    dynamodb = boto3.resource("dynamodb")
+    table = dynamodb.Table(table_name)
+    
+    try:
+        # Scan the table to get all launches
+        response = table.scan()
+        items = response.get("Items", [])
+        
+        # If there is pagination, we continue getting the next items
+        while "LastEvaluatedKey" in response:
+            response = table.scan(ExclusiveStartKey=response["LastEvaluatedKey"])
+            items.extend(response.get("Items", []))
+            
+        # Get the overall success rate of the launches
+        
+        statistics = {
+            "total_success": sum(1 for item in items if item["status"] == "success"),
+            "total_failed": sum(1 for item in items if item["status"] == "failed"),
+            "total_upcoming": sum(1 for item in items if item["status"] == "upcoming"),
+        }
+        
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "labels": ["Exitosos", "Fallidos", "Pendientes"],
+                "statistics": [statistics["total_success"], statistics["total_failed"], statistics["total_upcoming"]]
+            }),
+        }
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": f"Error getting overall success rate: {str(e)}"}),
+        }
+
+def launches_by_year(event, context):
+    """
+    Get the launches by year from the DynamoDB database.
+    """
+    table_name = os.environ.get("TABLE_NAME", "AppDataTable")
+    dynamodb = boto3.resource("dynamodb")
+    table = dynamodb.Table(table_name)
+    
+    try:
+        # Scan the table to get all launches
+        response = table.scan()
+        items = response.get("Items", [])
+        
+        # If there is pagination, we continue getting the next items
+        while "LastEvaluatedKey" in response:
+            response = table.scan(ExclusiveStartKey=response["LastEvaluatedKey"])
+            items.extend(response.get("Items", []))
+            
+        # Get the launches by year
+        from collections import defaultdict
+
+        launches_by_year = defaultdict(int)
+        for item in items:
+            fecha = item.get("launch_date_utc", "")
+            if len(fecha) >= 4 and fecha[:4].isdigit():
+                launches_by_year[fecha[:4]] += 1
+
+        launches_by_year = dict(launches_by_year)
+        
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "labels": list(launches_by_year.keys()),
+                "statistics": list(launches_by_year.values())
+            }),
+        }
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": f"Error getting launches by year: {str(e)}"}),
+        }
+
+def count_rockets(event, context):
+    """
+    Obtener la cantidad de lanzamientos por tipo de cohete desde la base de datos DynamoDB.
+    """
+    table_name = os.environ.get("TABLE_NAME", "AppDataTable")
+    dynamodb = boto3.resource("dynamodb")
+    table = dynamodb.Table(table_name)
+    
+    try:
+        # Escanear la tabla para obtener todos los lanzamientos
+        response = table.scan()
+        items = response.get("Items", [])
+        
+        # Si hay paginación, continuar obteniendo los siguientes ítems
+        while "LastEvaluatedKey" in response:
+            response = table.scan(ExclusiveStartKey=response["LastEvaluatedKey"])
+            items.extend(response.get("Items", []))
+        
+        # Contar la cantidad de lanzamientos por tipo de cohete
+        from collections import defaultdict
+        rocket_counts = defaultdict(int)
+        for item in items:
+            rocket_name = item.get("rocket_name", "Desconocido")
+            rocket_counts[rocket_name] += 1
+
+        # Preparar la respuesta
+        rocket_counts = dict(rocket_counts)
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "labels": list(rocket_counts.keys()),
+                "statistics": list(rocket_counts.values())
+            }),
+        }
+    except Exception as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": f"Error al obtener la cantidad por tipo de cohete: {str(e)}"}),
+        }
 
 def swagger(event, context):
     """
