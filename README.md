@@ -56,3 +56,7 @@ npm run cdk:deploy
 ```bash
 npm run remove:backend
 ```
+
+Preview deploy en AWS
+
+![Image deploy](./docs/images/cloudformation.png)

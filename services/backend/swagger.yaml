@@ -1,0 +1,145 @@
+openapi: 3.0.1
+info:
+  title: API SpaceX
+  description: API para consultar información de lanzamientos de SpaceX almacenados en DynamoDB
+  version: "1.0.0"
+servers:
+  - url: /
+paths:
+  /:
+    get:
+      summary: Endpoint de prueba
+      description: Devuelve un mensaje de bienvenida para verificar que el servicio está funcionando.
+      responses:
+        '200':
+          description: Respuesta exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /sync:
+    post:
+      summary: Sincronizar lanzamientos
+      description: Descarga y guarda los lanzamientos de SpaceX en la base de datos DynamoDB
+      responses:
+        '200':
+          description: Lanzamientos sincronizados correctamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  saved:
+                    type: integer
+                    description: Número de lanzamientos guardados
+                  table:
+                    type: string
+                    description: Nombre de la tabla utilizada
+        '500':
+          description: Error al sincronizar los lanzamientos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /launches:
+    get:
+      summary: Obtener todos los lanzamientos
+      description: Devuelve todos los lanzamientos almacenados en la base de datos
+      responses:
+        '200':
+          description: Lista de lanzamientos obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  launches:
+                    type: array
+                    description: Array de lanzamientos
+                    items:
+                      $ref: '#/components/schemas/Launch'
+        '500':
+          description: Error al obtener los lanzamientos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /statistics:
+    get:
+      summary: Obtener estadísticas de lanzamientos
+      description: Devuelve estadísticas agregadas de los lanzamientos almacenados
+      responses:
+        '200':
+          description: Estadísticas de lanzamientos obtenidas exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statistics:
+                    type: object
+                    properties:
+                      total_launches:
+                        type: integer
+                        description: Total de lanzamientos
+                      total_success:
+                        type: integer
+                        description: Total de lanzamientos exitosos
+                      total_failed:
+                        type: integer
+                        description: Total de lanzamientos fallidos
+                      total_upcoming:
+                        type: integer
+                        description: Total de lanzamientos próximos
+        '500':
+          description: Error al obtener las estadísticas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+components:
+  schemas:
+    Launch:
+      type: object
+      properties:
+        pk:
+          type: string
+          description: Clave primaria del lanzamiento
+        sk:
+          type: string
+          description: Clave de ordenamiento
+        mission_name:
+          type: string
+          description: Nombre de la misión
+        rocket_name:
+          type: string
+          description: Nombre del cohete
+        launch_date_utc:
+          type: string
+          description: Fecha y hora del lanzamiento (UTC)
+        launch_date_unix:
+          type: number
+          description: Fecha y hora del lanzamiento en formato Unix
+        status:
+          type: string
+          description: Estado del lanzamiento (exitoso, fallido, próximo)
+        launchpad_name:
+          type: string
+          description: Nombre de la plataforma de lanzamiento
+        payload_names:
+          type: array
+          description: Nombres de las cargas útiles
+          items:
+            type: string

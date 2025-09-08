@@ -24,8 +24,16 @@ provider:
             - arn:aws:dynamodb:*:*:table/${env:TABLE_NAME, 'AppDataTable'}
             - arn:aws:dynamodb:*:*:table/${env:TABLE_NAME, 'AppDataTable'}/index/*
 
-# plugins:
-  # - ${self:custom.plugins.${opt:stage, 'dev'}, ''}
+plugins:
+  - serverless-openapi-documentation
+  - serverless-offline
+
+package:
+  patterns:
+    - '!node_modules/**'
+    - '!tests/**'
+    - '!*.md'
+    - 'swagger.yaml'
 
 functions:
   hello:
@@ -54,4 +62,18 @@ functions:
     events:
       - httpApi:
           path: /statistics
+          method: GET
+  swagger:
+    handler: handler.swagger
+    timeout: 10
+    events:
+      - httpApi:
+          path: /swagger
+          method: GET
+  docs:
+    handler: handler.swagger_ui
+    timeout: 10
+    events:
+      - httpApi:
+          path: /docs
           method: GET
