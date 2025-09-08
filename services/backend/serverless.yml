@@ -24,8 +24,8 @@ provider:
             - arn:aws:dynamodb:*:*:table/${env:TABLE_NAME, 'AppDataTable'}
             - arn:aws:dynamodb:*:*:table/${env:TABLE_NAME, 'AppDataTable'}/index/*
 
-plugins:
-  - ${self:custom.plugins.${opt:stage, 'dev'}, ''}
+# plugins:
+  # - ${self:custom.plugins.${opt:stage, 'dev'}, ''}
 
 functions:
   hello:
